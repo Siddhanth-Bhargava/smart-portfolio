@@ -13,10 +13,10 @@ from datetime import date
 
 # Welcome message
 st.title("📈 Smart Portfolio Optimizer")
-st.markdown("""
-Welcome! This app helps you build a custom investment portfolio from top US companies.
-Just pick your stocks, choose a time period, and let me do the math!
-""")
+st.markdown(
+    "Welcome! This app helps you build a custom investment portfolio from top US companies. "
+    "Just pick your stocks, choose a time period, and let me do the math!"
+)
 
 st.sidebar.header("Build Your Portfolio!")
 st.sidebar.markdown("**Select the companies you want to invest in:**")
@@ -83,9 +83,9 @@ if st.sidebar.button("Run"):
 
 # Add a FAQ or explainer section
 with st.expander("What do these results mean?"):
-    st.markdown("""
-    - **Price Chart:** Shows how your selected stocks performed over time.
-    - **Correlation Matrix:** Tells you how similar the stocks' movements are.
-    - **Portfolio Weights:** How much of your money would go into each stock for the best balance of risk and reward.
-    - **SGD Loss Convergence:** Shows how the optimizer improved your portfolio over time.
-    """)
+    st.markdown(
+        "- **Price Chart:** Shows how your selected stocks performed over time.\n"
+        "- **Correlation Matrix:** Tells you how similar the stocks' movements are.\n"
+        "- **Portfolio Weights:** How much of your money would go into each stock for the best balance of risk and reward.\n"
+        "- **SGD Loss Convergence:** Shows how the optimizer improved your portfolio over time."
+    )
