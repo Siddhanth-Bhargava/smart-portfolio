@@ -15,10 +15,10 @@ from datetime import date
 st.title("📈 Smart Portfolio Optimizer")
 st.markdown("""
 Welcome! This app helps you build a custom investment portfolio from top US companies.
-Just pick your stocks, choose a time period, and let us do the math!
+Just pick your stocks, choose a time period, and let me do the math!
 """)
 
-st.sidebar.header("Build Your Portfolio")
+st.sidebar.header("Build Your Portfolio!")
 st.sidebar.markdown("**Select the companies you want to invest in:**")
 
 @st.cache_data
