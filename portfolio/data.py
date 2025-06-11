@@ -3,33 +3,41 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-def fetch_prices(tickers, start_date, end_date):
+def fetch_prices(tickers, start_date, end_date, batch_size=50):
     """
     Download adjusted close prices for given tickers & date range.
-    Returns a DataFrame indexed by date.
+    Handles batching and missing tickers gracefully.
+    Returns a DataFrame indexed by date, columns are tickers.
     """
-    try:
-        print(f"Fetching data for {tickers} from {start_date} to {end_date}...")
-        data = yf.download(tickers, start=start_date, end=end_date)
-        
-        print(f"Data columns: {data.columns.tolist()}")
-        print(f"Data shape: {data.shape}")
-        
-        # Extract adjusted close prices
-        if 'Adj Close' in data.columns:
-            prices = data['Adj Close']
-        elif ('Adj Close', tickers[0]) in data.columns:
-            # Multi-level columns case
-            prices = data['Adj Close']
-        else:
-            # Fallback to Close prices if Adj Close not available
-            prices = data['Close']
-        
-        print(f"Successfully downloaded data for {len(prices)} trading days")
-        return prices.dropna()
-    except Exception as e:
-        print(f"Error fetching data: {e}")
-        print(f"Available data columns: {data.columns.tolist() if 'data' in locals() else 'No data'}")
+    all_prices = []
+    valid_tickers = []
+    tickers = [t.strip().upper() for t in tickers if t.strip()]
+    for i in range(0, len(tickers), batch_size):
+        batch = tickers[i:i+batch_size]
+        try:
+            data = yf.download(batch, start=start_date, end=end_date, progress=False)
+            # Handle both single and multi-ticker cases
+            if 'Adj Close' in data.columns:
+                prices = data['Adj Close']
+            elif ('Adj Close', batch[0]) in data.columns:
+                prices = data['Adj Close']
+            else:
+                prices = data['Close']
+            # If only one ticker, make it a DataFrame
+            if isinstance(prices, pd.Series):
+                prices = prices.to_frame(batch[0])
+            all_prices.append(prices)
+            valid_tickers.extend(prices.columns.tolist())
+        except Exception as e:
+            print(f"Error fetching batch {batch}: {e}")
+    if all_prices:
+        result = pd.concat(all_prices, axis=1)
+        # Drop columns with all NaNs (invalid tickers)
+        result = result.dropna(axis=1, how='all')
+        print(f"Fetched data for {len(result.columns)} valid tickers.")
+        return result
+    else:
+        print("No data fetched.")
         return pd.DataFrame()
 
 def calculate_returns(prices):
